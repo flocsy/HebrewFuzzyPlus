@@ -1,5 +1,5 @@
 #include <pebble.h>
-  
+
 static const char * const MINUTES[] = {
     "הקדו",
     "יתשו\nתוקד",
@@ -92,16 +92,51 @@ static const char * const HOURS_WITH_TO[] = {
     "תחאל\nהרשע"
 };  
 
-static Window *s_main_window;
-static TextLayer *s_time_layer;
+typedef struct Font {
+  char* name;
+  uint32_t size_small;
+  uint32_t size_medium;
+  uint32_t size_large;
+} Font;
+
+#define MAX_FONTS 4
+static const struct Font fonts[MAX_FONTS] = {
+  { // Tora Ashkenaz
+    "Tora",
+    RESOURCE_ID_FONT_KEY_ASHKENAZ_28,
+    RESOURCE_ID_FONT_KEY_ASHKENAZ_36,
+    RESOURCE_ID_FONT_KEY_ASHKENAZ_42
+  },
+  { // Handwriting
+    "Handwriting",
+    RESOURCE_ID_FONT_KEY_KTAV_28,
+    RESOURCE_ID_FONT_KEY_KTAV_36,
+    RESOURCE_ID_FONT_KEY_KTAV_42
+  },
+  { // Maccabi (modern)
+    "Maccabi",
+    RESOURCE_ID_FONT_KEY_MACBI_28,
+    RESOURCE_ID_FONT_KEY_MACBI_28,
+    RESOURCE_ID_FONT_KEY_MACBI_28
+  },
+  { // Rashi??? Doesn't work in Pebble Classic emulator, displays only squares
+    "Rashi",
+    RESOURCE_ID_FONT_KEY_RASHI_28,
+    RESOURCE_ID_FONT_KEY_RASHI_28,
+    RESOURCE_ID_FONT_KEY_RASHI_28
+  }
+};
+
+static int font_index = 0;
 
 static GFont s_time_font42;
 static GFont s_time_font36;
 static GFont s_time_font28;
 
+static Window *s_main_window;
+static TextLayer *s_time_layer;
 
-void get_heb_desc_from_time(struct tm *t, char* timeText){
-
+void get_heb_desc_from_time(struct tm *t, char* timeText) {
     int hour = t->tm_hour;
     int minutes = t->tm_min;
     int next_hour = hour + 1;
@@ -131,9 +166,6 @@ void get_heb_desc_from_time(struct tm *t, char* timeText){
     strcat(timeText, HOURS[hour]);
     strcat(timeText, "\n");
     strcat(timeText, MINUTES[minutes - 1]);
-    
-    return;
-
 }
 
 static void update_time() {
@@ -142,20 +174,22 @@ static void update_time() {
   struct tm *tick_time = localtime(&temp);
 
   // Create a long-lived buffer
-  //static char buffer[] = "00:00";
-  static char buffer[100] = {0};
+  static char buffer[100] = {0}; // 53 should be more than enough
   strcpy(buffer, "");
   get_heb_desc_from_time(tick_time,buffer);
   
   int textLen = strlen(buffer);
     
-  if (textLen < 20)
+  if (textLen < 20) {
+APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 42");
     text_layer_set_font(s_time_layer, s_time_font42);
-  else if (textLen < 40)
+  } else if (textLen < 40) {
+APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 36");
     text_layer_set_font(s_time_layer, s_time_font36);
-  else
+  } else {
+APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 28");
     text_layer_set_font(s_time_layer, s_time_font28);
-
+  }
 
   // Display this time on the TextLayer
   text_layer_set_text(s_time_layer, buffer);
@@ -165,6 +199,42 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
 }
 
+static void unload_fonts() {
+  // Unload GFont
+  if (s_time_font42) {
+    fonts_unload_custom_font(s_time_font42);
+    s_time_font42 = NULL;
+  }
+  if (s_time_font36) {
+    fonts_unload_custom_font(s_time_font36);
+    s_time_font36 = NULL;
+  }
+  if (s_time_font28) {
+    fonts_unload_custom_font(s_time_font28);
+    s_time_font28 = NULL;
+  }
+}
+
+static void load_fonts() {
+  GFont fallback_font;
+  unload_fonts();
+
+  // Create GFont
+  if (fonts[font_index].size_small) {
+    fallback_font = s_time_font28 = fonts_load_custom_font(resource_get_handle(fonts[font_index].size_small));
+  }
+  if (fonts[font_index].size_medium) {
+    fallback_font = s_time_font36 = fonts_load_custom_font(resource_get_handle(fonts[font_index].size_medium));
+  } else {
+    s_time_font36 = fallback_font;
+  }
+  if (fonts[font_index].size_large) {
+    s_time_font42 = fonts_load_custom_font(resource_get_handle(fonts[font_index].size_large));
+  } else {
+    s_time_font42 = fallback_font;
+  }
+}
+
 static void main_window_load(Window *window) {
   // Create time TextLayer
   s_time_layer = text_layer_create(GRect(0, 0, 144, 168));
@@ -172,11 +242,7 @@ static void main_window_load(Window *window) {
   text_layer_set_text_color(s_time_layer, GColorWhite);
   // Make sure the time is displayed from the start   
   
-  
-  // Create GFont
-  s_time_font42 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_KEY_ASHKENAZ_42));
-  s_time_font36 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_KEY_ASHKENAZ_36));
-  s_time_font28 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_KEY_ASHKENAZ_28));
+  load_fonts();
 
   // Apply to TextLayer
   //text_layer_set_font(s_time_layer, s_time_font28);
@@ -191,13 +257,9 @@ static void main_window_load(Window *window) {
 }
 
 static void main_window_unload(Window *window) {
-  // Unload GFont
-  fonts_unload_custom_font(s_time_font42);
-  fonts_unload_custom_font(s_time_font36);
-  fonts_unload_custom_font(s_time_font28);
+  unload_fonts();
   // Destroy TextLayer
   text_layer_destroy(s_time_layer);
-
 }
 
 static void init() {
@@ -214,12 +276,11 @@ static void init() {
 
   // Show the Window on the watch, with animated=true
   window_stack_push(s_main_window, true);
-
 }
 
 static void deinit() {
-    // Destroy Window
-    window_destroy(s_main_window);
+  // Destroy Window
+  window_destroy(s_main_window);
 }
 
 int main(void) {
@@ -227,4 +288,3 @@ int main(void) {
   app_event_loop();
   deinit();
 }
-

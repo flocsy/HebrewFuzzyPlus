@@ -9,47 +9,55 @@
     "resources": {
         "media": [
             {
+                "characterRegex": "[\u05d0-\u05ea]",
+                "file": "fonts/MakabiYG.ttf",
+                "name": "FONT_KEY_MACBI_28",
+                "type": "font"
+            },
+            {
                 "file": "images/hebFuzzy.png",
                 "menuIcon": true,
                 "name": "RESOURCE_ID_IMAGE_ICON",
                 "type": "png"
             },
             {
-                "file": "fonts/MakabiYG.ttf",
-                "name": "FONT_KEY_MACBI_28",
-                "type": "font"
-            },
-            {
-                "file": "fonts/ktav.ttf",
-                "name": "FONT_KEY_KTAV_28",
-                "type": "font"
-            },
-            {
-                "file": "fonts/ktav.ttf",
-                "name": "FONT_KEY_KTAV_36",
-                "type": "font"
-            },
-            {
-                "file": "fonts/ktav.ttf",
-                "name": "FONT_KEY_KTAV_42",
-                "type": "font"
-            },
-            {
+                "characterRegex": "[\u05d0-\u05ea]",
                 "file": "fonts/rashi.ttf",
                 "name": "FONT_KEY_RASHI_28",
                 "type": "font"
             },
             {
+                "characterRegex": "[\u05d0-\u05ea]",
+                "file": "fonts/ktav.ttf",
+                "name": "FONT_KEY_KTAV_28",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[\u05d0-\u05ea]",
+                "file": "fonts/ktav.ttf",
+                "name": "FONT_KEY_KTAV_36",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[\u05d0-\u05ea]",
+                "file": "fonts/ktav.ttf",
+                "name": "FONT_KEY_KTAV_42",
+                "type": "font"
+            },
+            {
+                "characterRegex": "[\u05d0-\u05ea]",
                 "file": "fonts/StamAshkenazCLM.ttf",
                 "name": "FONT_KEY_ASHKENAZ_28",
                 "type": "font"
             },
             {
+                "characterRegex": "[\u05d0-\u05ea]",
                 "file": "fonts/StamAshkenazCLM.ttf",
                 "name": "FONT_KEY_ASHKENAZ_36",
                 "type": "font"
             },
             {
+                "characterRegex": "[\u05d0-\u05ea]",
                 "file": "fonts/StamAshkenazCLM.ttf",
                 "name": "FONT_KEY_ASHKENAZ_42",
                 "type": "font"
