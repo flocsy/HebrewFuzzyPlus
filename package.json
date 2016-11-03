@@ -1,0 +1,90 @@
+{
+    "author": "kaaspad",
+    "dependencies": {},
+    "keywords": [],
+    "name": "hebfuzzy",
+    "pebble": {
+        "displayName": "Hebrew Fuzzy Watch",
+        "enableMultiJS": false,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/MakabiYG.ttf",
+                    "name": "FONT_KEY_MACBI_28",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "file": "images/hebFuzzy.png",
+                    "menuIcon": true,
+                    "name": "RESOURCE_ID_IMAGE_ICON",
+                    "targetPlatforms": null,
+                    "type": "png"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/rashi.ttf",
+                    "name": "FONT_KEY_RASHI_28",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/ktav.ttf",
+                    "name": "FONT_KEY_KTAV_28",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/ktav.ttf",
+                    "name": "FONT_KEY_KTAV_36",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/ktav.ttf",
+                    "name": "FONT_KEY_KTAV_42",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/StamAshkenazCLM.ttf",
+                    "name": "FONT_KEY_ASHKENAZ_28",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/StamAshkenazCLM.ttf",
+                    "name": "FONT_KEY_ASHKENAZ_36",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0-\u05ea]",
+                    "file": "fonts/StamAshkenazCLM.ttf",
+                    "name": "FONT_KEY_ASHKENAZ_42",
+                    "targetPlatforms": null,
+                    "type": "font"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "diorite"
+        ],
+        "uuid": "20590e84-87cd-4102-9180-ed7a3203f214",
+        "watchapp": {
+            "watchface": true
+        }
+    },
+    "version": "1.0.0"
+}
