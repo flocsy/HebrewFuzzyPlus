@@ -1,95 +1,115 @@
 #include <pebble.h>
+#include "pebble-rtltr/rtltr.h"
 
-static const char * const MINUTES[] = {
-    "הקדו",
-    "יתשו\nתוקד",
-    "שולשו\nתוקד",
-    "עבראו\nתוקד",
-    "השימחו",
-    "ששו\nתוקד",
-    "עבשו\nתוקד",
-    "הנומשו\nתוקד",
-    "עשתו\nתוקד",
-    "הרשעו",
-    "תחאו\nהרשע\nתוקד",
-    "םייתשו\nהרשע\nתוקד",
-    "שולשו\nהרשע\nתוקד",
-    "עבראו\nהרשע\nתוקד",
-    "עברו",
-    "ששו\nהרשע\nתוקד",
-    "עבשו\nהרשע\nתוקד",
-    "הנומשו\nהרשע\nתוקד",
-    "עשתו\nהרשע\nתוקד",
-    "םירשעו",
-    "םירשע\nתחאו",
-    "םירשע\nםייתשו",
-    "םירשע\nשולשו",
-    "םירשע\nעבראו",
-    "םירשע\nשמחו",
-    "םירשע\nששו",
-    "םירשע\nעבשו",
-    "םירשע\nהנומשו",
-    "םירשע\nעשתו",
-    "יצחו",
-    "םישולש\nתחאו",
-    "םישולש\nםייתשו",
-    "םישולש\nשולשו",
-    "םישולש\nעבראו",
-    "םישולש\nשמחו",
-    "םישולש\nששו",
-    "םישולש\nעבשו",
-    "םישולש\nהנומשו",
-    "םישולש\nעשתו",
-    "םירשע",
-    "םיעברא\nתחאו",
-    "םיעברא\nםייתשו",
-    "םיעברא\nשולשו",
-    "םיעברא\nעבראו",
-    "עבר",
-    "םיעברא\nששו",
-    "םיעברא\nעבשו",
-    "םיעברא\nהנומשו",
-    "םיעברא\nעשתו",
-    "הרשע",
-    "םישימח\nתחאו",
-    "םישימח\nםייתשו",
-    "םישימח\nשולשו",
-    "םישימח\nעבראו",
-    "השימח",
-    "עברא\nתוקד",
-    "שולש\nתוקד",
-    "יתש\nתוקד",
-    "הקד"
+//#define CLIPPING
+
+static char
+  m01[] = "הקדו",
+  m02[] = "יתשו\nתוקד",
+  m03[] = "שולשו\nתוקד",
+  m04[] = "עבראו\nתוקד",
+  m05[] = "השימחו",
+  m06[] = "ששו\nתוקד",
+  m07[] = "עבשו\nתוקד",
+  m08[] = "הנומשו\nתוקד",
+  m09[] = "עשתו\nתוקד",
+  m10[] = "הרשעו",
+  m11[] = "תחאו\nהרשע\nתוקד",
+  m12[] = "םייתשו\nהרשע\nתוקד",
+  m13[] = "שולשו\nהרשע\nתוקד",
+  m14[] = "עבראו\nהרשע\nתוקד",
+  m15[] = "עברו",
+  m16[] = "ששו\nהרשע\nתוקד",
+  m17[] = "עבשו\nהרשע\nתוקד",
+  m18[] = "הנומשו\nהרשע\nתוקד",
+  m19[] = "עשתו\nהרשע\nתוקד",
+  m20[] = "םירשעו",
+  m21[] = "םירשע\nתחאו",
+  m22[] = "םירשע\nםייתשו",
+  m23[] = "םירשע\nשולשו",
+  m24[] = "םירשע\nעבראו",
+  m25[] = "םירשע\nשמחו",
+  m26[] = "םירשע\nששו",
+  m27[] = "םירשע\nעבשו",
+  m28[] = "םירשע\nהנומשו",
+  m29[] = "םירשע\nעשתו",
+  m30[] = "יצחו",
+  m31[] = "םישולש\nתחאו",
+  m32[] = "םישולש\nםייתשו",
+  m33[] = "םישולש\nשולשו",
+  m34[] = "םישולש\nעבראו",
+  m35[] = "םישולש\nשמחו",
+  m36[] = "םישולש\nששו",
+  m37[] = "םישולש\nעבשו",
+  m38[] = "םישולש\nהנומשו",
+  m39[] = "םישולש\nעשתו",
+  m40[] = "םירשע",
+  m41[] = "םיעברא\nתחאו",
+  m42[] = "םיעברא\nםייתשו",
+  m43[] = "םיעברא\nשולשו",
+  m44[] = "םיעברא\nעבראו",
+  m45[] = "עבר",
+  m46[] = "םיעברא\nששו",
+  m47[] = "םיעברא\nעבשו",
+  m48[] = "םיעברא\nהנומשו",
+  m49[] = "םיעברא\nעשתו",
+  m50[] = "הרשע",
+  m51[] = "םישימח\nתחאו",
+  m52[] = "םישימח\nםייתשו",
+  m53[] = "םישימח\nשולשו",
+  m54[] = "םישימח\nעבראו",
+  m55[] = "השימח",
+  m56[] = "עברא\nתוקד",
+  m57[] = "שולש\nתוקד",
+  m58[] = "יתש\nתוקד",
+  m59[] = "הקד"
+  ;
+#define MAX_MINUTES 59
+static char * MINUTES[MAX_MINUTES] = {
+      m01,m02,m03,m04,m05,m06,m07,m08,m09,
+  m10,m11,m12,m13,m14,m15,m16,m17,m18,m19,
+  m20,m21,m22,m23,m24,m25,m26,m27,m28,m29,
+  m30,m31,m32,m33,m34,m35,m36,m37,m38,m39,
+  m40,m41,m42,m43,m44,m45,m46,m47,m48,m49,
+  m50,m51,m52,m53,m54,m55,m56,m57,m58,m59
 };
 
-static const char * const HOURS[] = {
-    "םייתש\nהרשע",
-    "תחא",
-    "םייתש",
-    "שולש",
-    "עברא",
-    "שמח",
-    "שש",
-    "עבש",
-    "הנומש",
-    "עשת",
-    "רשע",
-    "תחא\nהרשע"
+static char
+  h12[] = "םייתש\nהרשע",
+  h01[] = "תחא",
+  h02[] = "םייתש",
+  h03[] = "שולש",
+  h04[] = "עברא",
+  h05[] = "שמח",
+  h06[] = "שש",
+  h07[] = "עבש",
+  h08[] = "הנומש",
+  h09[] = "עשת",
+  h10[] = "רשע",
+  h11[] = "תחא\nהרשע"
+  ;
+#define MAX_HOURS 12
+static char * HOURS[MAX_HOURS] = {
+  h12,h01,h02,h03,h04,h05,h06,h07,h08,h09,h10,h11
 };
 
-static const char * const HOURS_WITH_TO[] = {
-    "םייתשל\nהרשע",
-    "תחאל",
-    "םייתשל",
-    "שולשל",
-    "עבראל",
-    "שמחל",
-    "ששל",
-    "עבשל",
-    "הנומשל",
-    "עשתל",
-    "רשעל",
-    "תחאל\nהרשע"
+static char
+  h12_[] = "םייתשל\nהרשע",
+  h01_[] = "תחאל",
+  h02_[] = "םייתשל",
+  h03_[] = "שולשל",
+  h04_[] = "עבראל",
+  h05_[] = "שמחל",
+  h06_[] = "ששל",
+  h07_[] = "עבשל",
+  h08_[] = "הנומשל",
+  h09_[] = "עשתל",
+  h10_[] = "רשעל",
+  h11_[] = "תחאל\nהרשע"
+  ;
+#define MAX_HOURS_WITH_TO 12
+static char * HOURS_WITH_TO[MAX_HOURS_WITH_TO] = {
+  h12_,h01_,h02_,h03_,h04_,h05_,h06_,h07_,h08_,h09_,h10_,h11_
 };  
 
 typedef struct Font {
@@ -97,33 +117,57 @@ typedef struct Font {
   uint32_t size_small;
   uint32_t size_medium;
   uint32_t size_large;
+#ifdef CLIPPING
+  int clip_right;
+#endif
 } Font;
 
-#define MAX_FONTS 4
+#define MAX_FONTS 5
 static const struct Font fonts[MAX_FONTS] = {
+  { // Simple CLM Bold
+    "Simple",
+    RESOURCE_ID_FONT_KEY_SIMPLE_28,
+    RESOURCE_ID_FONT_KEY_SIMPLE_36,
+    RESOURCE_ID_FONT_KEY_SIMPLE_42
+#ifdef CLIPPING
+    ,0
+#endif
+  },
   { // Tora Ashkenaz
     "Tora",
     RESOURCE_ID_FONT_KEY_ASHKENAZ_28,
     RESOURCE_ID_FONT_KEY_ASHKENAZ_36,
     RESOURCE_ID_FONT_KEY_ASHKENAZ_42
+#ifdef CLIPPING
+    ,0
+#endif
   },
   { // Handwriting
     "Handwriting",
     RESOURCE_ID_FONT_KEY_KTAV_28,
-    RESOURCE_ID_FONT_KEY_KTAV_36,
+    RESOURCE_ID_FONT_KEY_KTAV_34,
     RESOURCE_ID_FONT_KEY_KTAV_42
+#ifdef CLIPPING
+    ,23
+#endif
   },
   { // Maccabi (modern)
     "Maccabi",
     RESOURCE_ID_FONT_KEY_MACBI_28,
-    RESOURCE_ID_FONT_KEY_MACBI_28,
-    RESOURCE_ID_FONT_KEY_MACBI_28
+    RESOURCE_ID_FONT_KEY_MACBI_36,
+    RESOURCE_ID_FONT_KEY_MACBI_42
+#ifdef CLIPPING
+    ,0
+#endif
   },
-  { // Rashi??? Doesn't work in Pebble Classic emulator, displays only squares
+  { // Rashi
     "Rashi",
     RESOURCE_ID_FONT_KEY_RASHI_28,
-    RESOURCE_ID_FONT_KEY_RASHI_28,
-    RESOURCE_ID_FONT_KEY_RASHI_28
+    RESOURCE_ID_FONT_KEY_RASHI_36,
+    RESOURCE_ID_FONT_KEY_RASHI_42
+#ifdef CLIPPING
+    ,0
+#endif
   }
 };
 
@@ -134,7 +178,7 @@ static GFont s_time_font36;
 static GFont s_time_font28;
 
 static Window *s_main_window;
-static TextLayer *s_time_layer;
+static TextLayer *s_time_text_layer;
 
 void get_heb_desc_from_time(struct tm *t, char* timeText) {
     int hour = t->tm_hour;
@@ -177,22 +221,26 @@ static void update_time() {
   static char buffer[100] = {0}; // 53 should be more than enough
   strcpy(buffer, "");
   get_heb_desc_from_time(tick_time,buffer);
+//   strcpy(buffer, "תחא\nהרשע\nםישולש\nהנומשו");
+//   strcpy(buffer, "םירשע\nםייתשל\nהרשע");
+//   strcpy(buffer, "תחא\nהרשע\nםיעברא\nשולשו");
+//   strcpy(buffer, "םייתש\nהרשע\nעשתו\nהרשע\nתוקד");
   
   int textLen = strlen(buffer);
     
   if (textLen < 20) {
-APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 42");
-    text_layer_set_font(s_time_layer, s_time_font42);
-  } else if (textLen < 40) {
-APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 36");
-    text_layer_set_font(s_time_layer, s_time_font36);
-  } else {
-APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 28");
-    text_layer_set_font(s_time_layer, s_time_font28);
+// APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 42, len: %d, str: %s", textLen, buffer);
+    text_layer_set_font(s_time_text_layer, s_time_font42);
+  } else if (textLen < 42) {
+// APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 36, len: %d, str: %s", textLen, buffer);
+    text_layer_set_font(s_time_text_layer, s_time_font36);
+  } else { // 11:38
+// APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 28, len: %d, str: %s", textLen, buffer);
+    text_layer_set_font(s_time_text_layer, s_time_font28);
   }
 
   // Display this time on the TextLayer
-  text_layer_set_text(s_time_layer, buffer);
+  text_layer_set_text(s_time_text_layer, buffer);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
@@ -235,31 +283,62 @@ static void load_fonts() {
   }
 }
 
+#ifdef CLIPPING
+static void bg_update_proc(Layer *layer, GContext *ctx) {
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
+}
+#endif
+
 static void main_window_load(Window *window) {
+  Layer *window_layer = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(window_layer);
+
   // Create time TextLayer
-  s_time_layer = text_layer_create(GRect(0, 0, 144, 168));
-  text_layer_set_background_color(s_time_layer, GColorBlack);
-  text_layer_set_text_color(s_time_layer, GColorWhite);
-  // Make sure the time is displayed from the start   
-  
-  load_fonts();
+  s_time_text_layer = text_layer_create(bounds);
+  Layer * s_time_layer = text_layer_get_layer(s_time_text_layer);
 
-  // Apply to TextLayer
-  //text_layer_set_font(s_time_layer, s_time_font28);
+#ifdef CLIPPING
+  if (fonts[font_index].clip_right != 0) {
+    Layer *s_simple_bg_layer = layer_create(bounds);
+    layer_set_update_proc(s_simple_bg_layer, bg_update_proc);
+    layer_add_child(window_layer, s_simple_bg_layer);
 
-  // Improve the layout to be more like a watchface
-  //text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_BOLD));
-  update_time();
-  text_layer_set_text_alignment(s_time_layer, GTextAlignmentRight);
+    layer_set_frame(s_time_layer, GRect(bounds.origin.x, bounds.origin.y,
+      bounds.size.w - fonts[font_index].clip_right, bounds.size.h));
+//      layer_set_bounds(s_time_layer, GRect(bounds.origin.x, bounds.origin.y,
+//        bounds.size.w - fonts[font_index].clip_right, bounds.size.h));
+    layer_set_clips(s_time_layer, false);
+  }
+#endif
+  text_layer_set_text_alignment(s_time_text_layer, GTextAlignmentCenter);
+  text_layer_set_background_color(s_time_text_layer, GColorBlack);
+  text_layer_set_text_color(s_time_text_layer, GColorWhite);
 
   // Add it as a child layer to the Window's root layer
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
+  layer_add_child(window_layer, s_time_layer);
+  
+  load_fonts();
+  update_time();
 }
 
 static void main_window_unload(Window *window) {
   unload_fonts();
   // Destroy TextLayer
-  text_layer_destroy(s_time_layer);
+  text_layer_destroy(s_time_text_layer);
+}
+
+static void init_rtltr(void) {
+  rtltr_strings_are_visual_encoded();
+  rtltr_ensure_registered_string_arrays_capacity(3);
+  rtltr_register_string_array(MINUTES, MAX_MINUTES);
+  rtltr_register_string_array(HOURS, MAX_HOURS);
+  rtltr_register_string_array(HOURS_WITH_TO, MAX_HOURS_WITH_TO);
+//  rtltr_load_settings();
+//   rtltr_override(false);
+//  rtltr_override(true);
+  rtltr_init();
+  rtltr_free();
 }
 
 static void init() {
@@ -276,6 +355,8 @@ static void init() {
 
   // Show the Window on the watch, with animated=true
   window_stack_push(s_main_window, true);
+
+  init_rtltr();
 }
 
 static void deinit() {
