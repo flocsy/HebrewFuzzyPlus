@@ -1,7 +1,10 @@
 #include <pebble.h>
 #include "pebble-rtltr/rtltr.h"
 
-//#define CLIPPING
+//#define CLIPPING 1
+//#define CLIPPING PBL_IF_ROUND_ELSE(1, 0)
+
+#define FONT_INDEX_KEY 10
 
 static char
   m01[] = "הקדו",
@@ -117,7 +120,7 @@ typedef struct Font {
   uint32_t size_small;
   uint32_t size_medium;
   uint32_t size_large;
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
   int clip_right;
 #endif
 } Font;
@@ -129,16 +132,7 @@ static const struct Font fonts[MAX_FONTS] = {
     RESOURCE_ID_FONT_KEY_SIMPLE_28,
     RESOURCE_ID_FONT_KEY_SIMPLE_36,
     RESOURCE_ID_FONT_KEY_SIMPLE_42
-#ifdef CLIPPING
-    ,0
-#endif
-  },
-  { // Tora Ashkenaz
-    "Tora",
-    RESOURCE_ID_FONT_KEY_ASHKENAZ_28,
-    RESOURCE_ID_FONT_KEY_ASHKENAZ_36,
-    RESOURCE_ID_FONT_KEY_ASHKENAZ_42
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
     ,0
 #endif
   },
@@ -147,8 +141,17 @@ static const struct Font fonts[MAX_FONTS] = {
     RESOURCE_ID_FONT_KEY_KTAV_28,
     RESOURCE_ID_FONT_KEY_KTAV_34,
     RESOURCE_ID_FONT_KEY_KTAV_42
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
     ,23
+#endif
+  },
+  { // Tora Ashkenaz
+    "Tora",
+    RESOURCE_ID_FONT_KEY_ASHKENAZ_28,
+    RESOURCE_ID_FONT_KEY_ASHKENAZ_36,
+    RESOURCE_ID_FONT_KEY_ASHKENAZ_42
+#if defined(CLIPPING) && CLIPPING == 1
+    ,0
 #endif
   },
   { // Maccabi (modern)
@@ -156,7 +159,7 @@ static const struct Font fonts[MAX_FONTS] = {
     RESOURCE_ID_FONT_KEY_MACBI_28,
     RESOURCE_ID_FONT_KEY_MACBI_36,
     RESOURCE_ID_FONT_KEY_MACBI_42
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
     ,0
 #endif
   },
@@ -165,7 +168,7 @@ static const struct Font fonts[MAX_FONTS] = {
     RESOURCE_ID_FONT_KEY_RASHI_28,
     RESOURCE_ID_FONT_KEY_RASHI_36,
     RESOURCE_ID_FONT_KEY_RASHI_42
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
     ,0
 #endif
   }
@@ -220,7 +223,9 @@ static void update_time() {
   // Create a long-lived buffer
   static char buffer[100] = {0}; // 53 should be more than enough
   strcpy(buffer, "");
-  get_heb_desc_from_time(tick_time,buffer);
+  get_heb_desc_from_time(tick_time, buffer);
+//   strcpy(buffer, "עבר\nםייתשל");
+//   strcpy(buffer, "עבר\nהנומשל");
 //   strcpy(buffer, "תחא\nהרשע\nםישולש\nהנומשו");
 //   strcpy(buffer, "םירשע\nםייתשל\nהרשע");
 //   strcpy(buffer, "תחא\nהרשע\nםיעברא\nשולשו");
@@ -264,7 +269,7 @@ static void unload_fonts() {
 }
 
 static void load_fonts() {
-  GFont fallback_font;
+  GFont fallback_font = NULL;
   unload_fonts();
 
   // Create GFont
@@ -283,7 +288,7 @@ static void load_fonts() {
   }
 }
 
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
 static void bg_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
@@ -292,13 +297,17 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
 
 static void main_window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
+  window_set_background_color(window, GColorBlack);
   GRect bounds = layer_get_bounds(window_layer);
 
   // Create time TextLayer
-  s_time_text_layer = text_layer_create(bounds);
+  s_time_text_layer = text_layer_create(PBL_IF_ROUND_ELSE(
+    GRect(bounds.origin.x, bounds.origin.y + 6, bounds.size.w, bounds.size.h),
+    bounds
+  ));
   Layer * s_time_layer = text_layer_get_layer(s_time_text_layer);
 
-#ifdef CLIPPING
+#if defined(CLIPPING) && CLIPPING == 1
   if (fonts[font_index].clip_right != 0) {
     Layer *s_simple_bg_layer = layer_create(bounds);
     layer_set_update_proc(s_simple_bg_layer, bg_update_proc);
@@ -328,17 +337,32 @@ static void main_window_unload(Window *window) {
   text_layer_destroy(s_time_text_layer);
 }
 
+static void inbox_received_handler(DictionaryIterator *iterator, void *context) {
+  // Read tuples for data
+  Tuple* font_index_tup = dict_find(iterator, MESSAGE_KEY_FONT_INDEX);
+  if (font_index_tup) {
+    char *font_index_str = font_index_tup->value->cstring;
+    int font_index_int = atoi(font_index_str);
+    if (font_index_int != font_index) {
+      font_index = font_index_int;
+      persist_write_int(FONT_INDEX_KEY, font_index);
+      load_fonts();
+      update_time();
+    }
+  }
+
+  rtltr_inbox_received_handler(iterator, context);
+}
+
 static void init_rtltr(void) {
   rtltr_strings_are_visual_encoded();
   rtltr_ensure_registered_string_arrays_capacity(3);
   rtltr_register_string_array(MINUTES, MAX_MINUTES);
   rtltr_register_string_array(HOURS, MAX_HOURS);
   rtltr_register_string_array(HOURS_WITH_TO, MAX_HOURS_WITH_TO);
-//  rtltr_load_settings();
-//   rtltr_override(false);
-//  rtltr_override(true);
-  rtltr_init();
-  rtltr_free();
+  rtltr_register_callback_after_reverse_registered_strings(update_time);
+  app_message_register_inbox_received(inbox_received_handler);
+  app_message_open(128, 128);
 }
 
 static void init() {
@@ -353,13 +377,18 @@ static void init() {
     .unload = main_window_unload
   });
 
+  font_index = persist_read_int(FONT_INDEX_KEY);
+  init_rtltr();
+
   // Show the Window on the watch, with animated=true
   window_stack_push(s_main_window, true);
 
-  init_rtltr();
+  rtltr_load_settings();
+  rtltr_init();
 }
 
 static void deinit() {
+  rtltr_free();
   // Destroy Window
   window_destroy(s_main_window);
 }

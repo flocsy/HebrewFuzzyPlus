@@ -1,14 +1,20 @@
 {
-    "author": "kaaspad",
+    "author": "Gavriel Fleischer <flocsy@gmail.com>",
     "dependencies": {
-        "pebble-rtltr": "^0.3.0"
+        "pebble-clay": "^1.0.3",
+        "pebble-rtltr": "^0.3.1"
     },
     "keywords": [],
-    "name": "hebfuzzy",
+    "name": "hebrewfuzzy",
     "pebble": {
-        "displayName": "Hebrew Fuzzy Watch",
-        "enableMultiJS": false,
-        "messageKeys": [],
+        "capabilities": [
+            "configurable"
+        ],
+        "displayName": "Hebrew Fuzzy Plus",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "FONT_INDEX"
+        ],
         "projectType": "native",
         "resources": {
             "media": [
@@ -130,9 +136,11 @@
         "targetPlatforms": [
             "aplite",
             "basalt",
-            "diorite"
+            "chalk",
+            "diorite",
+            "emery"
         ],
-        "uuid": "20590e84-87cd-4102-9180-ed7a3203f214",
+        "uuid": "0a9668f6-4ce3-48b1-b11b-82c34adb8b03",
         "watchapp": {
             "watchface": true
         }
