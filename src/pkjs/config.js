@@ -24,7 +24,7 @@ module.exports = [
         "type": "radiogroup",
         "messageKey": "FONT_INDEX",
         "label": "Choose font",
-        "defaultValue": "0",
+        "defaultValue": "1",
         "options": [
           {
             "label": "Simple",

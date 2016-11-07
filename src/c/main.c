@@ -6,6 +6,7 @@
 
 #define FONT_INDEX_KEY 10
 
+#define VERTICAL_OFFSET (-6)
 static char
   m01[] = "הקדו",
   m02[] = "יתשו\nתוקד",
@@ -67,6 +68,16 @@ static char
   m58[] = "יתש\nתוקד",
   m59[] = "הקד"
   ;
+/*
+[אבדהוחילםמנעצקרשת]
+  גז
+  ט
+  ךכ
+  ן
+  ס
+  ףפ
+  ץ
+*/
 #define MAX_MINUTES 59
 static char * MINUTES[MAX_MINUTES] = {
       m01,m02,m03,m04,m05,m06,m07,m08,m09,
@@ -139,7 +150,7 @@ static const struct Font fonts[MAX_FONTS] = {
   { // Handwriting
     "Handwriting",
     RESOURCE_ID_FONT_KEY_KTAV_28,
-    RESOURCE_ID_FONT_KEY_KTAV_34,
+    RESOURCE_ID_FONT_KEY_KTAV_36,
     RESOURCE_ID_FONT_KEY_KTAV_42
 #if defined(CLIPPING) && CLIPPING == 1
     ,23
@@ -174,14 +185,16 @@ static const struct Font fonts[MAX_FONTS] = {
   }
 };
 
-static int font_index = 0;
+static int font_index = 1;
 
 static GFont s_time_font42;
 static GFont s_time_font36;
 static GFont s_time_font28;
 
 static Window *s_main_window;
+static GRect window_bounds;
 static TextLayer *s_time_text_layer;
+static Layer *s_time_layer;
 
 void get_heb_desc_from_time(struct tm *t, char* timeText) {
     int hour = t->tm_hour;
@@ -230,19 +243,28 @@ static void update_time() {
 //   strcpy(buffer, "םירשע\nםייתשל\nהרשע");
 //   strcpy(buffer, "תחא\nהרשע\nםיעברא\nשולשו");
 //   strcpy(buffer, "םייתש\nהרשע\nעשתו\nהרשע\nתוקד");
-  
-  int textLen = strlen(buffer);
-    
-  if (textLen < 20) {
-// APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 42, len: %d, str: %s", textLen, buffer);
-    text_layer_set_font(s_time_text_layer, s_time_font42);
-  } else if (textLen < 42) {
-// APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 36, len: %d, str: %s", textLen, buffer);
-    text_layer_set_font(s_time_text_layer, s_time_font36);
-  } else { // 11:38
-// APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time font 28, len: %d, str: %s", textLen, buffer);
-    text_layer_set_font(s_time_text_layer, s_time_font28);
+
+  GFont font = s_time_font42;
+  GSize content_size = graphics_text_layout_get_content_size(buffer, font, window_bounds, GTextOverflowModeFill, GTextAlignmentCenter);
+  if (content_size.w >= window_bounds.size.w || content_size.h >= window_bounds.size.h) {
+    font = s_time_font36;
+    content_size = graphics_text_layout_get_content_size(buffer, font, window_bounds, GTextOverflowModeFill, GTextAlignmentCenter);
+    if (content_size.w >= window_bounds.size.w || content_size.h >= window_bounds.size.h) {
+      font = s_time_font28;
+      content_size = graphics_text_layout_get_content_size(buffer, font, window_bounds, GTextOverflowModeFill, GTextAlignmentCenter);
+    }
   }
+  text_layer_set_font(s_time_text_layer, font);
+
+  // Vertical alignment
+//   GSize content_size = text_layer_get_content_size(s_time_text_layer);
+  int16_t y = window_bounds.origin.y + (window_bounds.size.h - content_size.h) / 2 + VERTICAL_OFFSET;
+  int16_t f = (font == s_time_font42 ? 42 : (font == s_time_font36 ? 36 : 28));
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time len: %d, font_size: %d, str: %s", strlen(buffer), f, buffer);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time window:%d,%d content:%d,%d, frame.y: %d",
+          window_bounds.size.w, window_bounds.size.h,
+          content_size.w,content_size.h, y);
+  layer_set_frame(s_time_layer, GRect(window_bounds.origin.x, y, window_bounds.size.w, window_bounds.size.h));
 
   // Display this time on the TextLayer
   text_layer_set_text(s_time_text_layer, buffer);
@@ -296,27 +318,27 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
 #endif
 
 static void main_window_load(Window *window) {
-  Layer *window_layer = window_get_root_layer(window);
   window_set_background_color(window, GColorBlack);
-  GRect bounds = layer_get_bounds(window_layer);
+  Layer *window_layer = window_get_root_layer(window);
+  window_bounds = layer_get_bounds(window_layer);
 
   // Create time TextLayer
   s_time_text_layer = text_layer_create(PBL_IF_ROUND_ELSE(
-    GRect(bounds.origin.x, bounds.origin.y + 6, bounds.size.w, bounds.size.h),
-    bounds
+    GRect(window_bounds.origin.x, window_bounds.origin.y + 6, window_bounds.size.w, window_bounds.size.h),
+    window_bounds
   ));
-  Layer * s_time_layer = text_layer_get_layer(s_time_text_layer);
+  s_time_layer = text_layer_get_layer(s_time_text_layer);
 
 #if defined(CLIPPING) && CLIPPING == 1
   if (fonts[font_index].clip_right != 0) {
-    Layer *s_simple_bg_layer = layer_create(bounds);
+    Layer *s_simple_bg_layer = layer_create(window_bounds);
     layer_set_update_proc(s_simple_bg_layer, bg_update_proc);
     layer_add_child(window_layer, s_simple_bg_layer);
 
-    layer_set_frame(s_time_layer, GRect(bounds.origin.x, bounds.origin.y,
-      bounds.size.w - fonts[font_index].clip_right, bounds.size.h));
-//      layer_set_bounds(s_time_layer, GRect(bounds.origin.x, bounds.origin.y,
-//        bounds.size.w - fonts[font_index].clip_right, bounds.size.h));
+    layer_set_frame(s_time_layer, GRect(window_bounds.origin.x, window_bounds.origin.y,
+      window_bounds.size.w - fonts[font_index].clip_right, window_bounds.size.h));
+//      layer_set_bounds(s_time_layer, GRect(window_bounds.origin.x, window_bounds.origin.y,
+//        window_bounds.size.w - fonts[font_index].clip_right, window_bounds.size.h));
     layer_set_clips(s_time_layer, false);
   }
 #endif
@@ -377,7 +399,9 @@ static void init() {
     .unload = main_window_unload
   });
 
-  font_index = persist_read_int(FONT_INDEX_KEY);
+  if (persist_exists(FONT_INDEX_KEY)) {
+    font_index = persist_read_int(FONT_INDEX_KEY);
+  }
   init_rtltr();
 
   // Show the Window on the watch, with animated=true
