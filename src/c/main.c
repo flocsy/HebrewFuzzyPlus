@@ -237,6 +237,7 @@ static void update_time() {
   static char buffer[100] = {0}; // 53 should be more than enough
   strcpy(buffer, "");
   get_heb_desc_from_time(tick_time, buffer);
+//   strcpy(buffer, "שש");
 //   strcpy(buffer, "עבר\nםייתשל");
 //   strcpy(buffer, "עבר\nהנומשל");
 //   strcpy(buffer, "תחא\nהרשע\nםישולש\nהנומשו");

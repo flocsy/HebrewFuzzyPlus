@@ -1,9 +1,24 @@
-# hebFuzzy
-Pebble Hebrew Fuzzy Watchface.
+# Hebrew Fuzzy Plus
+Pebble watchface to display the time with Hebrew words.
 
-## Heavily based on Pebble example watchface as well as on heb-text-pebble by kalugny.
+## Features:
 
-Uses Ashkenaz Torah font for displaying the time. 
-There are addition fonts just switch the calls to GFont in main.c
+- Settings to choose from 5 Jewish fonts: Simple, Handwriting, Tora Ashkenaz, Maccabi, Rashi.
 
-SDK 2.0/3.0 compliant
+- Works on both the original and elbbeP (https://elbbep.cpfx.ca/) firmware with correct Hebrew direction.
+
+- Supports: Aplite, Basalt, Chalk, Diorite, Emery platforms
+
+- SDK 2, 3, 4
+
+## Keywords
+Hebrew, Fuzzy, Jewish, Israel, elbbeP, bidi, rtl
+עברית, ישראל, כתב יד, תורה, אשכנז, מכבי, רש"י
+
+## Author
+https://github.com/flocsy/HebrewFuzzyPlus
+
+## Contributors
+https://github.com/kalugny/heb-text-pebble
+kaneti
+https://github.com/kaaspad/hebFuzzy

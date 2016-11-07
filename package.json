@@ -5,7 +5,7 @@
         "pebble-rtltr": "^0.3.1"
     },
     "keywords": [],
-    "name": "hebfuzzy",
+    "name": "hebrew-fuzzy-plus",
     "pebble": {
         "capabilities": [
             "configurable"
@@ -19,11 +19,32 @@
         "resources": {
             "media": [
                 {
-                    "file": "images/hebFuzzy.png",
+                    "file": "images/hebrew-fuzzy-plus-icon-25x25.png",
                     "menuIcon": true,
                     "name": "RESOURCE_ID_IMAGE_ICON",
                     "targetPlatforms": null,
                     "type": "png"
+                },
+                {
+                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
+                    "file": "fonts/SimpleCLM-Bold.ttf",
+                    "name": "FONT_KEY_SIMPLE_28",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
+                    "file": "fonts/SimpleCLM-Bold.ttf",
+                    "name": "FONT_KEY_SIMPLE_36",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
+                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
+                    "file": "fonts/SimpleCLM-Bold.ttf",
+                    "name": "FONT_KEY_SIMPLE_42",
+                    "targetPlatforms": null,
+                    "type": "font"
                 },
                 {
                     "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
@@ -69,22 +90,22 @@
                 },
                 {
                     "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/SimpleCLM-Bold.ttf",
-                    "name": "FONT_KEY_SIMPLE_42",
+                    "file": "fonts/MakabiYG.ttf",
+                    "name": "FONT_KEY_MACBI_28",
                     "targetPlatforms": null,
                     "type": "font"
                 },
                 {
                     "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/SimpleCLM-Bold.ttf",
-                    "name": "FONT_KEY_SIMPLE_36",
+                    "file": "fonts/MakabiYG.ttf",
+                    "name": "FONT_KEY_MACBI_36",
                     "targetPlatforms": null,
                     "type": "font"
                 },
                 {
                     "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/SimpleCLM-Bold.ttf",
-                    "name": "FONT_KEY_SIMPLE_28",
+                    "file": "fonts/MakabiYG.ttf",
+                    "name": "FONT_KEY_MACBI_42",
                     "targetPlatforms": null,
                     "type": "font"
                 },
@@ -108,27 +129,6 @@
                     "name": "FONT_KEY_RASHI_42",
                     "targetPlatforms": null,
                     "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/MakabiYG.ttf",
-                    "name": "FONT_KEY_MACBI_42",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/MakabiYG.ttf",
-                    "name": "FONT_KEY_MACBI_36",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/MakabiYG.ttf",
-                    "name": "FONT_KEY_MACBI_28",
-                    "targetPlatforms": null,
-                    "type": "font"
                 }
             ]
         },
@@ -145,5 +145,5 @@
             "watchface": true
         }
     },
-    "version": "1.1.0"
+    "version": "1.0.1"
 }
