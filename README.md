@@ -16,7 +16,7 @@ Hebrew, Fuzzy, Jewish, Israel, elbbeP, bidi, rtl
 עברית, ישראל, כתב יד, תורה, אשכנז, מכבי, רש"י
 
 ## Author
-https://github.com/flocsy/HebrewFuzzyPlus
+https://github.com/flocsy/hebrew-fuzzy-plus
 
 ## Contributors
 https://github.com/kalugny/heb-text-pebble

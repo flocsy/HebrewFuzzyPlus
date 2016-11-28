@@ -4,7 +4,10 @@
         "pebble-clay": "^1.0.3",
         "pebble-rtltr": "^0.3.1"
     },
-    "keywords": [],
+    "keywords": [
+        "Hebrew", "Fuzzy", "text", "Jewish", "Israel", "elbbeP", "bidi", "rtl",
+        "עברית", "ישראל", "כתב יד", "תורה", "אשכנז", "מכבי", "רש\"י"
+    ],
     "name": "hebrew-fuzzy-plus",
     "pebble": {
         "capabilities": [
