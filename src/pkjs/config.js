@@ -1,12 +1,8 @@
 /**
   * Copyright (c) 2016 Gavriel Fleischer <flocsy@gmail.com>
-  *
-  * Use `npm install pebble-clay --save` to add pebble-clay to your app.
-  * See: app.js
-  * This is a simple configuration with 1 toggle to enable/disable RTLTR.
-  *
-  * IMPORTANT: You need to keep the `"messageKey": "RTLTR_OVERRIDE"` to work. All the rest can be changed.
   */
+
+const RTLTR_CONFIG = require('pebble-rtltr/config');
 
 module.exports = [
   {
@@ -22,53 +18,35 @@ module.exports = [
       },
       {
         "type": "radiogroup",
-        "messageKey": "FONT_INDEX",
-        "label": "Choose font",
-        "defaultValue": "1",
+        "messageKey": "FONT",
+        "label": "Font",
+        "defaultValue": "HANDWRITING",
         "options": [
           {
             "label": "Simple",
-            "value": "0"
+            "value": "SIMPLE"
           },
           {
             "label": "Handwriting",
-            "value": "1"
+            "value": "HANDWRITING"
           },
           {
             "label": "Tora Ashkenaz",
-            "value": "2"
+            "value": "TORA_ASHKENAZ"
           },
           {
             "label": "Maccabi",
-            "value": "3"
+            "value": "MACCABI"
           },
           {
             "label": "Rashi",
-            "value": "4"
+            "value": "RASHI"
           }
         ]
       }
     ]
   },
-  {
-    "type": "section",
-    "items": [
-      {
-        "type": "heading",
-        "defaultValue": "Language Settings"
-      },
-      {
-        "type": "text",
-        "defaultValue": "Override RTLTR if Hebrew times are displayed in the incorrect direction."
-      },
-      {
-        "type": "toggle",
-        "messageKey": "RTLTR_OVERRIDE",
-        "label": "Override RTLTR",
-        "defaultValue": false
-      }
-    ]
-  },
+  RTLTR_CONFIG,
   {
     "type": "submit",
     "defaultValue": "Save Settings"

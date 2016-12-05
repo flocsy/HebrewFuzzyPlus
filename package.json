@@ -1,152 +1,250 @@
 {
-    "author": "Gavriel Fleischer <flocsy@gmail.com>",
-    "dependencies": {
-        "pebble-clay": "^1.0.3",
-        "pebble-rtltr": "^0.3.1"
-    },
-    "keywords": [
-        "Hebrew", "Fuzzy", "text", "Jewish", "Israel", "elbbeP", "bidi", "rtl",
-        "עברית", "ישראל", "כתב יד", "תורה", "אשכנז", "מכבי", "רש\"י"
+  "author": "Gavriel Fleischer <flocsy@gmail.com>",
+  "dependencies": {
+    "pebble-clay": "^1.0.4",
+    "pebble-rtltr": "^0.3.3"
+  },
+  "devDependencies": {
+    "pebble-platform-sdk": "^0.0.3"
+  },
+  "keywords": [
+    "Hebrew",
+    "Fuzzy",
+    "text",
+    "Jewish",
+    "Israel",
+    "elbbeP",
+    "bidi",
+    "rtl",
+    "עברית",
+    "ישראל",
+    "כתב יד",
+    "תורה",
+    "אשכנז",
+    "מכבי",
+    "רש\"י"
+  ],
+  "name": "hebrew-fuzzy-plus",
+  "scripts": {
+    "clean": "pebble clean",
+    "distclean": "npm run clean && rm -rf build node_modules dist.zip .pebble-platform-sdk",
+    "build": "pebble-platform-sdk aplite=3.13.1 basalt=3.13.1 chalk=3.13.1 diorite=4.0 emery=4.2.2",
+    "build-aplite": "pebble build --sdk=3.13.1",
+    "build-basalt": "pebble build --sdk=3.13.1",
+    "build-chalk": "pebble build --sdk=3.13.1",
+    "build-diorite": "pebble build --sdk=4.0",
+    "build-emery": "pebble build --sdk=4.2.2",
+    "test": "make test",
+    "pebble-publish": "npm run clean && npm run build && pebble package publish"
+  },
+  "pebble": {
+    "capabilities": [
+      "configurable"
     ],
-    "name": "hebrew-fuzzy-plus",
-    "pebble": {
-        "capabilities": [
-            "configurable"
-        ],
-        "displayName": "Hebrew Fuzzy Plus",
-        "enableMultiJS": true,
-        "messageKeys": [
-            "FONT_INDEX"
-        ],
-        "projectType": "native",
-        "resources": {
-            "media": [
-                {
-                    "file": "images/hebrew-fuzzy-plus-icon-25x25.png",
-                    "menuIcon": true,
-                    "name": "RESOURCE_ID_IMAGE_ICON",
-                    "targetPlatforms": null,
-                    "type": "png"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/SimpleCLM-Bold.ttf",
-                    "name": "FONT_KEY_SIMPLE_28",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/SimpleCLM-Bold.ttf",
-                    "name": "FONT_KEY_SIMPLE_36",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/SimpleCLM-Bold.ttf",
-                    "name": "FONT_KEY_SIMPLE_42",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/ktav.ttf",
-                    "name": "FONT_KEY_KTAV_28",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/ktav.ttf",
-                    "name": "FONT_KEY_KTAV_36",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/ktav.ttf",
-                    "name": "FONT_KEY_KTAV_42",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/StamAshkenazCLM.ttf",
-                    "name": "FONT_KEY_ASHKENAZ_28",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/StamAshkenazCLM.ttf",
-                    "name": "FONT_KEY_ASHKENAZ_36",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/StamAshkenazCLM.ttf",
-                    "name": "FONT_KEY_ASHKENAZ_42",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/MakabiYG.ttf",
-                    "name": "FONT_KEY_MACBI_28",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/MakabiYG.ttf",
-                    "name": "FONT_KEY_MACBI_36",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/MakabiYG.ttf",
-                    "name": "FONT_KEY_MACBI_42",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/Mekorot-Rashi.ttf",
-                    "name": "FONT_KEY_RASHI_28",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/Mekorot-Rashi.ttf",
-                    "name": "FONT_KEY_RASHI_36",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[\u05d0\u05d1\u05d3\u05d4\u05d5\u05d7\u05d9\u05dc\u05dd\u05de\u05e0\u05e2\u05e6\u05e7\u05e8\u05e9\u05ea]",
-                    "file": "fonts/Mekorot-Rashi.ttf",
-                    "name": "FONT_KEY_RASHI_42",
-                    "targetPlatforms": null,
-                    "type": "font"
-                }
-            ]
+    "displayName": "Hebrew Fuzzy Plus",
+    "enableMultiJS": true,
+    "messageKeys": [
+      "FONT"
+    ],
+    "projectType": "native",
+    "resources": {
+      "media": [
+        {
+          "file": "images/hebrew-fuzzy-plus-icon-25x25.png",
+          "menuIcon": true,
+          "name": "RESOURCE_ID_IMAGE_ICON",
+          "targetPlatforms": null,
+          "type": "png"
         },
-        "sdkVersion": "3",
-        "targetPlatforms": [
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/SimpleCLM-Bold.ttf",
+          "name": "FONT_KEY_SIMPLE_28",
+          "targetPlatforms": [
             "aplite",
             "basalt",
             "chalk",
-            "diorite",
+            "diorite"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/SimpleCLM-Bold.ttf",
+          "name": "FONT_KEY_SIMPLE_36",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/SimpleCLM-Bold.ttf",
+          "name": "FONT_KEY_SIMPLE_42",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/SimpleCLM-Bold.ttf",
+          "name": "FONT_KEY_SIMPLE_48",
+          "targetPlatforms": [
             "emery"
-        ],
-        "uuid": "0a9668f6-4ce3-48b1-b11b-82c34adb8b03",
-        "watchapp": {
-            "watchface": true
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/ktav.ttf",
+          "name": "FONT_KEY_KTAV_28",
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/ktav.ttf",
+          "name": "FONT_KEY_KTAV_36",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/ktav.ttf",
+          "name": "FONT_KEY_KTAV_42",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/ktav.ttf",
+          "name": "FONT_KEY_KTAV_48",
+          "targetPlatforms": [
+            "emery"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/StamAshkenazCLM.ttf",
+          "name": "FONT_KEY_ASHKENAZ_28",
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/StamAshkenazCLM.ttf",
+          "name": "FONT_KEY_ASHKENAZ_36",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/StamAshkenazCLM.ttf",
+          "name": "FONT_KEY_ASHKENAZ_42",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/StamAshkenazCLM.ttf",
+          "name": "FONT_KEY_ASHKENAZ_48",
+          "targetPlatforms": [
+            "emery"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/MakabiYG.ttf",
+          "name": "FONT_KEY_MACABI_28",
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/MakabiYG.ttf",
+          "name": "FONT_KEY_MACABI_36",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/MakabiYG.ttf",
+          "name": "FONT_KEY_MACABI_42",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/MakabiYG.ttf",
+          "name": "FONT_KEY_MACABI_48",
+          "targetPlatforms": [
+            "emery"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/Mekorot-Rashi.ttf",
+          "name": "FONT_KEY_RASHI_28",
+          "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+          ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/Mekorot-Rashi.ttf",
+          "name": "FONT_KEY_RASHI_36",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/Mekorot-Rashi.ttf",
+          "name": "FONT_KEY_RASHI_42",
+          "targetPlatforms": null,
+          "type": "font"
+        },
+        {
+          "characterRegex": "[אבדהוחילםמנעצקרשת]",
+          "file": "fonts/Mekorot-Rashi.ttf",
+          "name": "FONT_KEY_RASHI_48",
+          "targetPlatforms": [
+            "emery"
+          ],
+          "type": "font"
         }
+      ]
     },
-    "version": "1.0.1"
+    "sdkVersion": "3",
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "chalk",
+      "diorite",
+      "emery"
+    ],
+    "uuid": "0a9668f6-4ce3-48b1-b11b-82c34adb8b03",
+    "watchapp": {
+      "watchface": true
+    }
+  },
+  "version": "1.1.0"
 }
