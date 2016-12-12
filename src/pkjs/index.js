@@ -1,7 +1,7 @@
 const CONFIG = require('./configuration');
 const DEBUG = CONFIG.DEBUG;
 const Analytics = require('./pebble-ga');
-const PACKAGE = require('./package.json');
+const PACKAGE = require('../../package');
 const MESSAGE_KEYS = require('message_keys');
 const MESSAGE_IDS = {};
 Object.keys(MESSAGE_KEYS).forEach(function(key){MESSAGE_IDS[MESSAGE_KEYS[key]] = key});
@@ -54,6 +54,14 @@ Pebble.addEventListener('ready', function(e) {
     console.log('JavaScript app ready and running!');
     ga = new Analytics(CONFIG.GA_UA, PACKAGE.name, PACKAGE.version);
     ga.trackEvent('app', 'start');
+    var watch = Pebble.getActiveWatchInfo ? Pebble.getActiveWatchInfo() : null;
+    if (watch) {
+        var fw = watch.firmware;
+        var ver = fw.major + '.' + fw.minor + '.' + fw.patch + (fw.suffix ? '-' + fw.suffix : '');
+        ga.trackEvent('watch', 'firmware', ver);
+        ga.trackEvent('watch', 'platform', watch.platform);
+        ga.trackEvent('watch', 'language', watch.language);
+    }
     sendConfig();
 });
 

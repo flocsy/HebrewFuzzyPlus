@@ -52,8 +52,11 @@ Analytics.prototype.trackScreen = function (screenName) {
   this._trackGA('appview', {'cd': screenName});
 }
 
-Analytics.prototype.trackEvent = function (category, action) {
-  this._trackGA('event', {'ec': category, 'ea': action});
+Analytics.prototype.trackEvent = function (category, action, label, value) {
+  var params = {'ec': category, 'ea': action};
+  if (label) params.el = label;
+  if (value) params.ev = value;
+  this._trackGA('event', params);
 }
 
 module.exports = Analytics;

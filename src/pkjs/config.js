@@ -43,6 +43,18 @@ module.exports = [
             "value": "RASHI"
           }
         ]
+      },
+      {
+        "type": "toggle",
+        "messageKey": "SHOW_BATTERY_STATUS",
+        "label": "Show Battery Status",
+        "defaultValue": true
+      },
+      {
+        "type": "toggle",
+        "messageKey": "INVERT_COLORS",
+        "label": "Invert Colors",
+        "defaultValue": false
       }
     ]
   },

@@ -2,10 +2,10 @@
   "author": "Gavriel Fleischer <flocsy@gmail.com>",
   "dependencies": {
     "pebble-clay": "^1.0.4",
-    "pebble-rtltr": "^0.3.3"
+    "pebble-rtltr": "^0.3.4"
   },
   "devDependencies": {
-    "pebble-platform-sdk": "^0.0.3"
+    "pebble-platform-sdk": "^0.0.4"
   },
   "keywords": [
     "Hebrew",
@@ -28,7 +28,7 @@
   "scripts": {
     "clean": "pebble clean",
     "distclean": "npm run clean && rm -rf build node_modules dist.zip .pebble-platform-sdk",
-    "build": "pebble-platform-sdk aplite=3.13.1 basalt=3.13.1 chalk=3.13.1 diorite=4.0 emery=4.2.2",
+    "build-all": "pebble-platform-sdk aplite=3.13.1 basalt=3.13.1 chalk=3.13.1 diorite=4.0 emery=4.2.2",
     "build-aplite": "pebble build --sdk=3.13.1",
     "build-basalt": "pebble build --sdk=3.13.1",
     "build-chalk": "pebble build --sdk=3.13.1",
@@ -44,7 +44,9 @@
     "displayName": "Hebrew Fuzzy Plus",
     "enableMultiJS": true,
     "messageKeys": [
-      "FONT"
+      "FONT",
+      "SHOW_BATTERY_STATUS",
+      "INVERT_COLORS"
     ],
     "projectType": "native",
     "resources": {
@@ -66,6 +68,13 @@
             "chalk",
             "diorite"
           ],
+          "type": "font"
+        },
+        {
+          "characterRegex": "[מלאחציקתר]",
+          "file": "fonts/SimpleCLM-Bold.ttf",
+          "name": "FONT_KEY_BATTERY_14",
+          "targetPlatforms": null,
           "type": "font"
         },
         {
@@ -246,5 +255,5 @@
       "watchface": true
     }
   },
-  "version": "1.1.0"
+  "version": "1.2.0"
 }

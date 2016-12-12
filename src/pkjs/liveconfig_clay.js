@@ -13,10 +13,8 @@ module.exports = function(minified) {
         var connection;
         if (uuid && watchtoken) {
             var open = function() {
-                console.log("open()");
                 connection = new WebSocket(clayConfig.meta.userData.liveconfigServerUrl + uuid + "/" + watchtoken);
                 connection.onopen = function (open) {
-                    console.log("onopen()", open);
                 };
                 connection.onerror = function(error) {
                     console.log("onerror()", JSON.stringify(error));

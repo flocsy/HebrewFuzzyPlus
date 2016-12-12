@@ -9,6 +9,8 @@
 #define GTEXT_OVERFLOW_MODE GTextOverflowModeWordWrap
 
 #define PERSIST_KEY_FONT 10
+#define PERSIST_KEY_SHOW_BATTERY_STATUS 11
+#define PERSIST_KEY_INVERT_COLORS 12
 
 #define FOREACH_FONT(FONT) \
         FONT(SIMPLE) \
@@ -157,6 +159,17 @@ static char * HOURS_WITH_TO[MAX_HOURS_WITH_TO] = {
   h12_,h01_,h02_,h03_,h04_,h05_,h06_,h07_,h08_,h09_,h10_,h11_
 };  
 
+static char battery_e[] = "קיר";
+static char battery_q[] = "תצק";
+static char battery_h[] = "יצח";
+static char battery_f[] = "אלמ";
+static const char * const battery_levels[] = {
+  battery_e,battery_e,battery_e, // 0,10,20
+  battery_q,battery_q, // 30,40
+  battery_h,battery_h,battery_h, // 50,60,70
+  battery_f,battery_f,battery_f // 80,90,100
+};
+
 typedef struct Font {
   char* name;
   uint32_t size_small;
@@ -242,15 +255,20 @@ static const struct Font fonts[MAX_FONTS] = {
 };
 
 static enum font font = HANDWRITING;
+static bool show_battery_status = true;
+static bool invert_colors = false;
 
+static GColor s_fg_color, s_bg_color;
 static GFont s_time_font_large = NULL;
 static GFont s_time_font_medium = NULL;
 static GFont s_time_font_small = NULL;
+static GFont s_battery_font = NULL;
 
 static Window *s_main_window;
 static GRect window_bounds, no_bounds;
-static TextLayer *s_time_text_layer;
+static TextLayer *s_time_text_layer, *s_battery_text_layer;
 static Layer *s_time_layer;
+static BatteryChargeState battery_state;
 
 void get_heb_desc_from_time(struct tm *t, char* timeText) {
     int hour = t->tm_hour;
@@ -319,24 +337,35 @@ static void update_time() {
 
   // Vertical alignment
 //   GSize content_size = text_layer_get_content_size(s_time_text_layer);
-  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "update_time str");
   int16_t y = window_bounds.origin.y + (window_bounds.size.h - content_size.h) / 2 + VERTICAL_OFFSET;
   char *fs = (font == s_time_font_large ? "large" : (font == s_time_font_medium ? "medium" : "small"));
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "update_time window:%d,%d content:%d,%d, frame.y:%d, len:%d, font_size:%s",
-    window_bounds.size.w, window_bounds.size.h, content_size.w,content_size.h, y, strlen(buffer), fs);
-  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "update_time str:%s", buffer);
+  APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "update_time %d:%d window:%d,%d content:%d,%d, frame.y:%d, len:%d, font_size:%s",
+    tick_time->tm_hour, tick_time->tm_min, window_bounds.size.w, window_bounds.size.h, content_size.w,content_size.h, y, strlen(buffer), fs);
+  //APP_LOG(APP_LOG_LEVEL_DEBUG_VERBOSE, "update_time str:%s", buffer);
   layer_set_frame(s_time_layer, GRect(window_bounds.origin.x, y, window_bounds.size.w, window_bounds.size.h - y));
 
   // Display this time on the TextLayer
   text_layer_set_text(s_time_text_layer, buffer);
+
+  // Display the battery status
+  text_layer_set_text(s_battery_text_layer, show_battery_status ? battery_levels[battery_state.charge_percent/10] : "");
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
 }
 
+static void battery_state_handler(BatteryChargeState charge) {
+  if (battery_state.charge_percent != charge.charge_percent ||
+      battery_state.is_charging != charge.is_charging ||
+      battery_state.is_plugged != charge.is_plugged) {
+    // Report the current charge percentage
+    APP_LOG(APP_LOG_LEVEL_INFO, "Battery charge is %d%%, charging: %d, plugged: %d", (int)charge.charge_percent, charge.is_charging, charge.is_plugged);
+  }
+  battery_state = charge;
+}
+
 static void unload_fonts() {
-  // Unload GFont
   if (s_time_font_large != NULL) {
     fonts_unload_custom_font(s_time_font_large);
     s_time_font_large = NULL;
@@ -349,13 +378,19 @@ static void unload_fonts() {
     fonts_unload_custom_font(s_time_font_small);
     s_time_font_small = NULL;
   }
+
+  if (s_battery_font != NULL) {
+    fonts_unload_custom_font(s_battery_font);
+    s_battery_font = NULL;
+  }
 }
 
 static void load_fonts() {
   GFont fallback_font = NULL;
   unload_fonts();
 
-  // Create GFont
+  s_battery_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_KEY_BATTERY_14));
+
   if (fonts[font].size_small) {
     fallback_font = s_time_font_small = fonts_load_custom_font(resource_get_handle(fonts[font].size_small));
   }
@@ -373,16 +408,35 @@ static void load_fonts() {
 
 #if defined(CLIPPING) && CLIPPING == 1
 static void bg_update_proc(Layer *layer, GContext *ctx) {
-  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_context_set_fill_color(ctx, s_bg_color);
   graphics_fill_rect(ctx, layer_get_bounds(layer), 0, GCornerNone);
 }
 #endif
 
+static void set_colors(void) {
+  s_fg_color = invert_colors ? GColorBlack : GColorWhite;
+  s_bg_color = invert_colors ? GColorWhite : GColorBlack;
+
+  if (s_main_window) {
+    window_set_background_color(s_main_window, s_bg_color);
+  }
+  if (s_time_text_layer) {
+    text_layer_set_background_color(s_time_text_layer, s_bg_color);
+    text_layer_set_text_color(s_time_text_layer, s_fg_color);
+  }
+  if (s_battery_text_layer) {
+    text_layer_set_background_color(s_battery_text_layer, s_bg_color);
+    text_layer_set_text_color(s_battery_text_layer, s_fg_color);
+  }
+}
+
 static void main_window_load(Window *window) {
-  window_set_background_color(window, GColorBlack);
+  window_set_background_color(window, s_bg_color);
   Layer *window_layer = window_get_root_layer(window);
   window_bounds = layer_get_bounds(window_layer);
   no_bounds = GRect(0, 0, window_bounds.size.w * 2, window_bounds.size.h * 2);
+
+  load_fonts();
 
   // Create time TextLayer
   s_time_text_layer = text_layer_create(PBL_IF_ROUND_ELSE(
@@ -406,13 +460,20 @@ static void main_window_load(Window *window) {
 #endif
   text_layer_set_text_alignment(s_time_text_layer, GTextAlignmentCenter);
   text_layer_set_overflow_mode(s_time_text_layer, GTEXT_OVERFLOW_MODE);
-  text_layer_set_background_color(s_time_text_layer, GColorBlack);
-  text_layer_set_text_color(s_time_text_layer, GColorWhite);
+  text_layer_set_background_color(s_time_text_layer, s_bg_color);
+  text_layer_set_text_color(s_time_text_layer, s_fg_color);
 
   // Add it as a child layer to the Window's root layer
   layer_add_child(window_layer, s_time_layer);
-  
-  load_fonts();
+
+  s_battery_text_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(0, 28), PBL_IF_RECT_ELSE(0, 20), 40, 16));
+  text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentLeft);
+  text_layer_set_overflow_mode(s_battery_text_layer, GTextOverflowModeFill);
+  text_layer_set_background_color(s_battery_text_layer, s_bg_color);
+  text_layer_set_text_color(s_battery_text_layer, s_fg_color);
+  text_layer_set_font(s_battery_text_layer, s_battery_font);
+  layer_add_child(window_layer, text_layer_get_layer(s_battery_text_layer));
+
   update_time();
 }
 
@@ -434,11 +495,25 @@ static void inbox_received_handler(DictionaryIterator *iterator, void *context) 
       persist_write_int(PERSIST_KEY_FONT, font);
       APP_LOG(APP_LOG_LEVEL_DEBUG, "inbox_received_handler: persist_write_int(%d, %d) font:%s", PERSIST_KEY_FONT, font, FONT_ID[font]);
       load_fonts();
-      update_time();
     }
   }
 
+  Tuple *show_battery_status_t = dict_find(iterator, MESSAGE_KEY_SHOW_BATTERY_STATUS);
+  if (show_battery_status_t) {
+    show_battery_status = show_battery_status_t->value->int32 == 1;
+    persist_write_bool(PERSIST_KEY_SHOW_BATTERY_STATUS, show_battery_status);
+  }
+
+  Tuple *invert_colors_t = dict_find(iterator, MESSAGE_KEY_INVERT_COLORS);
+  if (invert_colors_t) {
+    invert_colors = invert_colors_t->value->int32 == 1;
+    persist_write_bool(PERSIST_KEY_INVERT_COLORS, invert_colors);
+    set_colors();
+  }
+
   rtltr_inbox_received_handler(iterator, context);
+
+  update_time();
 }
 
 static void init_rtltr(void) {
@@ -447,12 +522,31 @@ static void init_rtltr(void) {
   rtltr_register_string_array(MINUTES, MAX_MINUTES);
   rtltr_register_string_array(HOURS, MAX_HOURS);
   rtltr_register_string_array(HOURS_WITH_TO, MAX_HOURS_WITH_TO);
+  rtltr_ensure_registered_strings_capacity(4);
+  rtltr_register_string(battery_e);
+  rtltr_register_string(battery_q);
+  rtltr_register_string(battery_h);
+  rtltr_register_string(battery_f);
   rtltr_register_callback_after_reverse_registered_strings(update_time);
   app_message_register_inbox_received(inbox_received_handler);
   app_message_open(128, 128);
 }
 
 static void init() {
+  if (persist_exists(PERSIST_KEY_FONT)) {
+    font = persist_read_int(PERSIST_KEY_FONT);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "init: persist_read_int: font:%d(%s)", font, FONT_ID[font]);
+  }
+  if (persist_exists(PERSIST_KEY_SHOW_BATTERY_STATUS)) {
+    show_battery_status = persist_read_bool(PERSIST_KEY_SHOW_BATTERY_STATUS);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "init: persist_read_bool: show_battery_status:%d", show_battery_status);
+  }
+  if (persist_exists(PERSIST_KEY_INVERT_COLORS)) {
+    invert_colors = persist_read_bool(PERSIST_KEY_INVERT_COLORS);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "init: persist_read_bool: invert_colors:%d", invert_colors);
+  }
+  set_colors();
+
   // Register with TickTimerService
   tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   // Create main Window element and assign to pointer
@@ -464,21 +558,21 @@ static void init() {
     .unload = main_window_unload
   });
 
-  if (persist_exists(PERSIST_KEY_FONT)) {
-    font = persist_read_int(PERSIST_KEY_FONT);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "init: persist_read_int: font:%d(%s)", font, FONT_ID[font]);
-  }
-
   // Show the Window on the watch, with animated=true
   window_stack_push(s_main_window, true);
 
   init_rtltr();
   rtltr_load_settings();
   rtltr_init();
+
+  // Get battery state updates
+  battery_state_handler(battery_state_service_peek());
+  battery_state_service_subscribe(battery_state_handler);
 }
 
 static void deinit() {
   rtltr_free();
+  battery_state_service_unsubscribe();
   // Destroy Window
   window_destroy(s_main_window);
 }
